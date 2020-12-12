@@ -11,11 +11,9 @@ import java.net.*;
  * 
  */
 public class SocketListener extends Thread {
-	private String host;
 	private int port;
 
-	public SocketListener(String host, int port) {
-		this.host = host;
+	public SocketListener(int port) {
 		this.port = port;
 	}
 
@@ -23,6 +21,7 @@ public class SocketListener extends Thread {
 		ServerSocket serverSocket = null;
 			try {
 				serverSocket = new ServerSocket(port);
+
 			} catch (IOException e) {
 				System.out.println(e);
 			}
