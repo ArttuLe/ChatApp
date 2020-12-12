@@ -1,16 +1,6 @@
 #MacOS
 .DS_Store
 
-# Java
-*.class
-# packages 
-*.jar
-*.war
-*.ear
-
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/dictionaries
-.idea/**/shelf
+.idea
+.vscode
 
