@@ -1,9 +1,6 @@
 package Server;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -19,7 +16,7 @@ import java.util.ArrayList;
 public class Listener extends Thread{
 
 
-
+    private String message;
     private Socket socket;
 
     public Listener(Socket clientSocket){
@@ -32,14 +29,15 @@ public class Listener extends Thread{
             // IO-streamit TCP yhteyden välillä lähettelyyn.
             InputStream iS = socket.getInputStream();
             OutputStream oS = socket.getOutputStream();
-           ObjectOutputStream toClient = new ObjectOutputStream(oS);
-           ObjectInputStream fromClient = new ObjectInputStream(iS);
+           DataOutputStream toClient = new DataOutputStream(oS);
+           DataInputStream fromClient = new DataInputStream(iS);
+        
            try{
-           while(true){ //"keskustelu" asiakkaan kanssa tapahtuu täällä
-            ArrayList<Messages> messages = (ArrayList<Messages>) fromClient.readObject();
-			messages.forEach((msg)-> System.out.println(msg.getMessage()));
+           while(true){ //"Chatting" happens inside this loop
+                String temp = fromClient.readUTF();
+                System.out.println(temp);
             }
-           }catch(IOException | ClassNotFoundException e) { // Asiakkaalta tultava jotenkin IOException, että yhteys katkeaa
+           }catch(IOException e) { // Asiakkaalta tultava jotenkin IOException, että yhteys katkeaa
                toClient.close();
                fromClient.close();
            }

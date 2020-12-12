@@ -24,22 +24,19 @@ public class Client extends Thread  {
 			System.out.println("...Connected!");
 			InputStream iS = clientSocket.getInputStream();
 			OutputStream oS = clientSocket.getOutputStream();
-			ObjectOutputStream toServer = new ObjectOutputStream(oS); 
-			ObjectInputStream fromServer = new ObjectInputStream(iS);
+			DataOutputStream toServer = new DataOutputStream(oS); 
+			DataInputStream fromServer = new DataInputStream(iS);
 			Scanner read = new Scanner(System.in); 
 			try {
 				while(input != "QUIT"){
-    				String input = read.nextLine();
-					ArrayList<Messages>messages = new ArrayList<>();
-            		messages.add(new Messages(input));
-            		toServer.writeObject(messages); //Olio lähetetään takaisin.
-            		toServer.flush();//"Virta" tyhjennetään
+					input= read.nextLine();
+					toServer.writeUTF(input);
+					toServer.flush();
 				}
+				toServer.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		/*	ArrayList<Messages> messages = (ArrayList<Messages>) fromServer.readObject();
-			messages.forEach((msg)-> System.out.println(msg.getMessage())); */
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("IO Exception");
