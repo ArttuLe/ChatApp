@@ -24,23 +24,21 @@ public class Listener extends Thread {
         this.clientSockets = clientSockets;
     }
 
-    public void write(String message) { // send a message to one client
-        try {
-            toClient.writeUTF(message);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void send(String message) {
+   /* public void send(String message) {
         for (Socket socket : clientSockets) {
             try {
                 DataOutputStream toClient = new DataOutputStream(socket.getOutputStream());
-                write(message);
+                toClient.writeUTF(message);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    } */
+
+    public void read(String message) throws IOException {
+        DataInputStream fromClient = new DataInputStream(socket.getInputStream());
+        message = fromClient.readUTF(); 
+        System.out.println(message);
     }
 
 
@@ -50,10 +48,10 @@ public class Listener extends Thread {
             // IO-streams for sending messages through TCP
         try{
            while(true){ //"Chatting" happens inside this loop
-               String temp = fromClient.readUTF();
-                send(temp);
-                
-            }
+                String message = null;
+                read(message);
+              //  send(message);
+               }
         }catch(IOException e) { //Connection closes at IOException which will be caused by the client
             toClient.close();
             fromClient.close();

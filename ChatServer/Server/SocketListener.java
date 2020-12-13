@@ -34,8 +34,8 @@ public class SocketListener extends Thread {
 				try{
 				Socket clientSocket = serverSocket.accept();
 				System.out.println("Client from "+clientSocket.getInetAddress()+" connected successfully...");
-				Listener g = new Listener(clientSocket,clientSockets);
 				clientSockets.add(clientSocket);
+				Listener g = new Listener(clientSocket,clientSockets);
 				System.out.println("Client handed over...Ready for new connections");
 				g.start();
 				}catch (IOException e){
