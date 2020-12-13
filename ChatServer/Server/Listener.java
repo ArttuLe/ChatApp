@@ -2,7 +2,6 @@ package Server;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 
 
 
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 public class Listener extends Thread{
 
 
-    private String message;
     private Socket socket;
 
     public Listener(Socket clientSocket){
@@ -26,7 +24,7 @@ public class Listener extends Thread{
     public void run(){ 
         try {
             System.out.println("Client successfully connected...");
-            // IO-streamit TCP yhteyden välillä lähettelyyn.
+            // IO-streams for sending messages through TCP
             InputStream iS = socket.getInputStream();
             OutputStream oS = socket.getOutputStream();
            DataOutputStream toClient = new DataOutputStream(oS);
@@ -37,7 +35,7 @@ public class Listener extends Thread{
                 String temp = fromClient.readUTF();
                 System.out.println(temp);
             }
-           }catch(IOException e) { // Asiakkaalta tultava jotenkin IOException, että yhteys katkeaa
+           }catch(IOException e) { //Connection closes at IOException which will be caused by the client
                toClient.close();
                fromClient.close();
            }

@@ -1,10 +1,8 @@
 package Client;
 
 import java.net.*;
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
-import Server.Messages;
 
 public class Client extends Thread  {
 
