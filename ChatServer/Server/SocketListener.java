@@ -2,6 +2,7 @@ package Server;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.*;
 
 /**
  * Class for handling the client connections.
@@ -12,16 +13,19 @@ import java.net.*;
  */
 public class SocketListener extends Thread {
 	private int port;
+	private ArrayList<Socket> clientSockets;
 
 	public SocketListener(int port) {
 		this.port = port;
+		clientSockets = new ArrayList<Socket>();
+
 	}
 
 	public void run() {
 		ServerSocket serverSocket = null;
 			try {
 				serverSocket = new ServerSocket(port);
-				System.out.println("Server runnning at "+port+"...");
+				System.out.println("Server runnning at port: "+port+"...");
 
 			} catch (IOException e) {
 				System.out.println(e);
@@ -30,7 +34,8 @@ public class SocketListener extends Thread {
 				try{
 				Socket clientSocket = serverSocket.accept();
 				System.out.println("Client from "+clientSocket.getInetAddress()+" connected successfully...");
-				Listener g = new Listener(clientSocket);
+				Listener g = new Listener(clientSocket,clientSockets);
+				clientSockets.add(clientSocket);
 				System.out.println("Client handed over...Ready for new connections");
 				g.start();
 				}catch (IOException e){

@@ -1,9 +1,8 @@
 package Server;
 
+import java.util.*;
 import java.io.*;
 import java.net.Socket;
-
-
 
 /**
  * Class for handling all the messaging between clients
@@ -12,33 +11,53 @@ import java.net.Socket;
  * 
  */
 
-public class Listener extends Thread{
+public class Listener extends Thread {
 
-
+    private ArrayList<Socket> clientSockets;
     private Socket socket;
+    private String message;
+    DataInputStream fromClient;
+    DataOutputStream toClient;
 
-    public Listener(Socket clientSocket){
-     this.socket = clientSocket;
+    public Listener(Socket clientSocket, ArrayList<Socket> clientSockets) throws IOException {
+        this.socket = clientSocket;
+        this.clientSockets = clientSockets;
     }
+
+    public void write(String message) { // send a message to one client
+        try {
+            toClient.writeUTF(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void send(String message) {
+        for (Socket socket : clientSockets) {
+            try {
+                DataOutputStream toClient = new DataOutputStream(socket.getOutputStream());
+                write(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     public void run(){ 
         try {
-            System.out.println("Client successfully connected...");
+            System.out.println("Client retrieved by the handler...");
             // IO-streams for sending messages through TCP
-            InputStream iS = socket.getInputStream();
-            OutputStream oS = socket.getOutputStream();
-           DataOutputStream toClient = new DataOutputStream(oS);
-           DataInputStream fromClient = new DataInputStream(iS);
-        
-           try{
+        try{
            while(true){ //"Chatting" happens inside this loop
-                String temp = fromClient.readUTF();
-                System.out.println(temp);
+               String temp = fromClient.readUTF();
+                send(temp);
+                
             }
-           }catch(IOException e) { //Connection closes at IOException which will be caused by the client
-               toClient.close();
-               fromClient.close();
-           }
+        }catch(IOException e) { //Connection closes at IOException which will be caused by the client
+            toClient.close();
+            fromClient.close();
+        }
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Disconnected...");
