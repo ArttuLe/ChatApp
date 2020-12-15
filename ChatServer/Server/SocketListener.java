@@ -1,5 +1,6 @@
 package Server;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
@@ -13,11 +14,11 @@ import java.util.*;
  */
 public class SocketListener extends Thread {
 	private int port;
-	private ArrayList<Socket> clientSockets;
+	private ArrayList<Socket> clients;
 
 	public SocketListener(int port) {
 		this.port = port;
-		clientSockets = new ArrayList<Socket>();
+		clients = new ArrayList<Socket>();
 
 	}
 
@@ -34,9 +35,8 @@ public class SocketListener extends Thread {
 				try{
 				Socket clientSocket = serverSocket.accept();
 				System.out.println("Client from "+clientSocket.getInetAddress()+" connected successfully...");
-				clientSockets.add(clientSocket);
-				Listener g = new Listener(clientSocket,clientSockets);
-				System.out.println("Client handed over...Ready for new connections");
+				Listener g = new Listener(clientSocket,clients);
+				System.out.println("Client handed over...Ready for new connections\n");
 				g.start();
 				}catch (IOException e){
 					e.printStackTrace();

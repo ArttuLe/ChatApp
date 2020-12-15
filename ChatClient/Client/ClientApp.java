@@ -4,6 +4,9 @@ package Client;
 
 
 
+
+
+
 public class ClientApp{
     private static ClientApp app;
     private Client client;

@@ -4,11 +4,19 @@ import java.net.*;
 import java.util.Scanner;
 import java.io.*;
 
+/**
+ * 
+ * A Class for sending messages to the server/other clients
+ */
+
+
 public class Client extends Thread  {
 
 	private String host;
 	private int port;
 	private String input;
+	private String name;
+	DataOutputStream toServer;
 
 	public Client(String host, int port) {
 		this.host = host;
@@ -17,27 +25,28 @@ public class Client extends Thread  {
 
 	public void run() {
 		System.out.println("Host name: " + host + " Port: " + port);
-		try { 			// Yrittää yhdistää palvelimelle
+		try { 										//Connects to the Server, IOException if it fails to connect
+			Scanner read = new Scanner(System.in);
 			Socket clientSocket = new Socket(host, port);
-			System.out.println("...Connected!");
-			InputStream iS = clientSocket.getInputStream();
-			OutputStream oS = clientSocket.getOutputStream();
-			DataOutputStream toServer = new DataOutputStream(oS); 
-			DataInputStream fromServer = new DataInputStream(iS);
-			Scanner read = new Scanner(System.in); 
-			try {
-				while(input != "QUIT"){
-					input= read.nextLine();
+			ClientListen listen = new ClientListen(clientSocket);
+			listen.start(); 						//Start a separate thread for listening the server for messages
+			System.out.println("...Connected!\nPlease enter your name: ");
+			name = read.nextLine();
+			name += ": ";
+			System.out.println("Start chatting!");
+			DataOutputStream toServer = new DataOutputStream(clientSocket.getOutputStream()); 
+				while(true){
+					try{
+					input = name+read.nextLine();
 					toServer.writeUTF(input);
 					toServer.flush();
+					}catch(IOException e){
+						e.printStackTrace();
+					}
 				}
-				toServer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("IO Exception");
+			System.out.println("Couldn't connect to the server...");
 		}
 	}
 

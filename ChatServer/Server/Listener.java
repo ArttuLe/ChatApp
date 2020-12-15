@@ -13,52 +13,47 @@ import java.net.Socket;
 
 public class Listener extends Thread {
 
-    private ArrayList<Socket> clientSockets;
+    private ArrayList<Socket> clients;
     private Socket socket;
     private String message;
     DataInputStream fromClient;
     DataOutputStream toClient;
 
-    public Listener(Socket clientSocket, ArrayList<Socket> clientSockets) throws IOException {
+    public Listener(Socket clientSocket, ArrayList<Socket> clients) throws IOException {
         this.socket = clientSocket;
-        this.clientSockets = clientSockets;
+        this.clients = clients;
     }
-
-   /* public void send(String message) {
-        for (Socket socket : clientSockets) {
-            try {
-                DataOutputStream toClient = new DataOutputStream(socket.getOutputStream());
-                toClient.writeUTF(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    } */
-
-    public void read(String message) throws IOException {
-        DataInputStream fromClient = new DataInputStream(socket.getInputStream());
-        message = fromClient.readUTF(); 
-        System.out.println(message);
-    }
+    
 
 
     public void run(){ 
         try {
             System.out.println("Client retrieved by the handler...");
-            // IO-streams for sending messages through TCP
-        try{
-           while(true){ //"Chatting" happens inside this loop
-                String message = null;
-                read(message);
-              //  send(message);
-               }
-        }catch(IOException e) { //Connection closes at IOException which will be caused by the client
-            toClient.close();
-            fromClient.close();
-        }
+            DataOutputStream toClient = new DataOutputStream(socket.getOutputStream());
+            DataInputStream fromClient = new DataInputStream(socket.getInputStream());
+            clients.add(socket); 
+            try {
+                while(true){//Broadcast the received message to all the other clients
+                message = fromClient.readUTF();
+                System.out.println(message);
+                for (int i = 0; i < clients.size();i++) {
+                    Socket temp = (Socket) clients.get(i);
+                    if(socket.equals(temp)){
+                        continue;
+                    }
+                    DataOutputStream toClients = new DataOutputStream(temp.getOutputStream());
+                    toClients.writeUTF(message);
+                    toClients.flush();
+                }
+                }
+            } catch (Exception e) {
+                toClient.close();
+                fromClient.close();
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Disconnected...");
+            System.out.println("Connection failed...");
         }
     }
 
